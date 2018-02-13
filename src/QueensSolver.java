@@ -14,14 +14,13 @@ public class QueensSolver {
         listOfMoves.push(startPosition);
 
         //Find first solution
-        if(placeQueen())
-        {
-            //Found first solution
+
+        if(placeQueen()){
+            displayChessBoard();
         }
 
-        //Find the rest of the solutions
         do{
-            backtrack = true;
+            displayChessBoard();
         }
         while(removeQueens());
     }
@@ -75,11 +74,11 @@ public class QueensSolver {
             //System.out.println("Col to check " + colToCheck);
             //System.out.println("Check " + rowToCheck+", "+colToCheck);
             if (isSafe(chessBoard, rowToCheck, colToCheck)) {
-
                 //System.out.println("Safe " + rowToCheck + ", " + colToCheck);
                 //System.out.println("Put queen to the board: "+rowToCheck+", "+colToCheck);
                 chessBoard[rowToCheck][colToCheck] = 'Q';
-                //System.out.println("Push to stack");
+                //System.out.println("Push solution to stack");
+
                 listOfMoves.push(0);
 
                 if (placeQueen()) {
@@ -88,48 +87,17 @@ public class QueensSolver {
                     //solutionCount+=1;
                     return true;
                 } else {
-
+                    //No solution in this row, col
+                    //Need back track
                     if (listOfMoves.getStackSize() < chessBoard.length) {
-                        //System.out.println("Need back track");
-
-                        int currentRow = 0;
-                        try {
-                            currentRow = (int) listOfMoves.pop();
-                        }
-                        catch (Exception ex){
-                            return false;
-                        }
-                        chessBoard[currentRow][colToCheck] = ' ';
-                        //System.out.println("Remove queen from the board: " + currentRow + ", " + colToCheck);
-                        int nextRow = currentRow + 1;
-                        //System.out.println("Next row"+nextRow);
-
-                        if (nextRow < chessBoard.length) {
-                            listOfMoves.push(nextRow);
-                            placeQueen();
-                        }
+                        removeQueens();
                     }
-                    else return true;
                 }
-                //placeQueen();
-
             } else {
                 //System.out.println("Not Safe " + rowToCheck + ", " + colToCheck);
-
-                if(backtrack) {
-                    removeQueens();
-                }
-                else {
-                    int nextRow = (int) listOfMoves.pop() + 1;
-
-                    if (nextRow < chessBoard.length) {
-                        listOfMoves.push(nextRow);
-                        //chessBoard[nextRow][colToCheck] = 'Q';
-                        placeQueen();
-                    } else {
-
-                    }
-                }
+                //No solution in this row, col
+                //Back track
+                removeQueens();
             }
         }
         return false;
@@ -169,7 +137,7 @@ public class QueensSolver {
         System.out.println();
         for(int row = 0; row < chessBoard.length; row++){
             for(int col=0; col<chessBoard[row].length; col++){
-                if(chessBoard[row][col]!='Q') chessBoard[row][col] = ' ';
+                if(chessBoard[row][col]!='Q') chessBoard[row][col] = '-';
                 System.out.print(chessBoard[row][col] +" | ");
             }
             System.out.println();

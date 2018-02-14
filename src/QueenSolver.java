@@ -1,5 +1,6 @@
 public class QueenSolver {
 
+
     public LinkStack listOfMoves;
     public char[][] chessBoard;
     public boolean backtrack;
@@ -8,39 +9,36 @@ public class QueenSolver {
     public QueenSolver(int numberOfQueens, int startPosition){
         chessBoard = new char[numberOfQueens][numberOfQueens];
         listOfMoves = new SolutionList();
-
         solutionCount = 0;
 
+        //Push row 0 into list of move and check if that row in the first column is safe to place the queen
         listOfMoves.push(startPosition);
 
-        if(placeQueen(numberOfQueens))
-        {
-            //System.out.println("Solved");
-            //System.out.println(listOfMoves);
+        //Find first solution
+
+        if(placeQueen()){
             //displayChessBoard();
-            backtrack = true;
-            //backTrack();
-        }
-        else{
-            System.out.println("No solution");
         }
 
         do{
-           //displayChessBoard();
+            //displayChessBoard();
         }
-        while(removeQueens(numberOfQueens));
-        //System.out.println("Total solution "+ solutionCount);
-
+        while(removeQueens());
     }
 
     public int getSolutionCount() {
         return solutionCount;
     }
 
-    public boolean removeQueens(int numberOfQueens) {
-
-        if(listOfMoves.getStackSize()>1) {
-            int row = (int) listOfMoves.pop();
+    public boolean removeQueens() {
+        int row = 0;
+        if(listOfMoves.getStackSize()>0) {
+            try {
+                row = (int) listOfMoves.pop();
+            }
+            catch(Exception ex){
+                return false;
+            }
             int col = listOfMoves.getStackSize();
             //System.out.println("Remove " + row + ", col " + col);
             chessBoard[row][col] = ' ';
@@ -48,7 +46,7 @@ public class QueenSolver {
             if (newRow < chessBoard.length) {
                 listOfMoves.push(newRow);
             }
-            placeQueen(numberOfQueens);
+            placeQueen();
             //System.out.println(listOfMoves);
         }
         else{
@@ -57,75 +55,50 @@ public class QueenSolver {
         return true;
     }
 
-    public boolean placeQueen(int numberOfQueen){
+    public boolean placeQueen(){
         int colToCheck = listOfMoves.getStackSize() - 1;
         //System.out.println("Current Stack size: "+ listOfMoves.getStackSize());
-        if(listOfMoves.getStackSize() > numberOfQueen) {
+        if(listOfMoves.getStackSize() > chessBoard.length) {
             listOfMoves.pop();
             System.out.println(listOfMoves);
             solutionCount+=1;
             return true;
         }
         else{
-            int rowToCheck = (int) listOfMoves.peak();
+            int rowToCheck = 0;
+            try {
+                rowToCheck = (int) listOfMoves.peak();
+            }
+            catch (Exception ex){
+                return false;
+            }
             //System.out.println("Col to check " + colToCheck);
             //System.out.println("Check " + rowToCheck+", "+colToCheck);
             if (isSafe(chessBoard, rowToCheck, colToCheck)) {
-
                 //System.out.println("Safe " + rowToCheck + ", " + colToCheck);
                 //System.out.println("Put queen to the board: "+rowToCheck+", "+colToCheck);
                 chessBoard[rowToCheck][colToCheck] = 'Q';
-                //System.out.println("Push to stack");
+                //System.out.println("Push solution to stack");
+
                 listOfMoves.push(0);
 
-                if (placeQueen(numberOfQueen)) {
+                if (placeQueen()) {
                     //System.out.println("Found ***********");
                     //System.out.println(listOfMoves);
                     //solutionCount+=1;
                     return true;
                 } else {
-
-                    if (listOfMoves.getStackSize() < numberOfQueen) {
-                        //System.out.println("Need back track");
-
-                        int currentRow = 0;
-                        try {
-                            currentRow = (int) listOfMoves.pop();
-                        }
-                        catch (Exception ex){
-                            return false;
-                        }
-                        chessBoard[currentRow][colToCheck] = ' ';
-                        //System.out.println("Remove queen from the board: " + currentRow + ", " + colToCheck);
-                        int nextRow = currentRow + 1;
-                        //System.out.println("Next row"+nextRow);
-
-                        if (nextRow < chessBoard.length) {
-                            listOfMoves.push(nextRow);
-                            placeQueen(numberOfQueen);
-                        }
+                    //No solution in this row, col
+                    //Need back track
+                    if (listOfMoves.getStackSize() < chessBoard.length) {
+                        removeQueens();
                     }
-                    else return true;
                 }
-                //placeQueen(numberOfQueen);
-
             } else {
                 //System.out.println("Not Safe " + rowToCheck + ", " + colToCheck);
-
-                if(backtrack) {
-                    removeQueens(numberOfQueen);
-                }
-                else {
-                    int nextRow = (int) listOfMoves.pop() + 1;
-
-                    if (nextRow < chessBoard.length) {
-                        listOfMoves.push(nextRow);
-                        //chessBoard[nextRow][colToCheck] = 'Q';
-                        placeQueen(numberOfQueen);
-                    } else {
-
-                    }
-                }
+                //No solution in this row, col
+                //Back track
+                removeQueens();
             }
         }
         return false;
@@ -162,14 +135,16 @@ public class QueenSolver {
     }
 
     public void displayChessBoard(){
-        System.out.println();
-        for(int row = 0; row < chessBoard.length; row++){
-            for(int col=0; col<chessBoard[row].length; col++){
-                if(chessBoard[row][col]!='Q') chessBoard[row][col] = ' ';
-                System.out.print(chessBoard[row][col] +" | ");
+        if(listOfMoves.getStackSize() >2) {
+            System.out.println();
+            for (int row = 0; row < chessBoard.length; row++) {
+                for (int col = 0; col < chessBoard[row].length; col++) {
+                    if (chessBoard[row][col] != 'Q') chessBoard[row][col] = '-';
+                    System.out.print(chessBoard[row][col] + " | ");
+                }
+                System.out.println();
             }
             System.out.println();
         }
-        System.out.println();
     }
 }

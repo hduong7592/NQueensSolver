@@ -1,3 +1,12 @@
+/**
+ * This is LinkStack class
+ *
+ * This class is used to create an ArrayList with the ItemNode
+ *
+ * @author Hieu Duong
+ * @since 2018-02-15
+ */
+
 public class LinkStack<T> implements Stackable<T> {
     protected ItemNode top;
     private int stackSize;
